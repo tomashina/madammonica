@@ -9,7 +9,8 @@
 error_log
 *.log
 /.well-known/
-/upload/.well-known/
+/upload/.well-known/*
+!/upload/.well-known/apple-developer-merchantid-domain-association
 /web/
 /cgi-bin/
 /upload/cgi-bin/

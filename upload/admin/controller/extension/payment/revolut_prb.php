@@ -85,8 +85,6 @@ class ControllerExtensionPaymentRevolutPrb extends ControllerExtensionPaymentRev
             $register_result = $this->model_extension_payment_revolut->registerApplePayDomain($oc_domain['host']);
             $this->log->write("Apple pay merchant onboarding result: " . json_encode($register_result));
 
-            unlink($onboarding_file_path);
-
             if (
                 !empty($register_result['response']) && 
                 is_array($register_result['response']) && 

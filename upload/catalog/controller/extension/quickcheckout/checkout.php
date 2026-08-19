@@ -5,7 +5,7 @@ class ControllerExtensionQuickCheckoutCheckout extends Equotix {
 	protected $extension_id = '58';
 	
 	public function index() {
-		$this->document->addScript('catalog/view/javascript/jquery/quickcheckout/quickcheckout.js');
+		$this->document->addScript('catalog/view/javascript/jquery/quickcheckout/quickcheckout.js?v=1.1');
 		
 		if ($this->config->get('quickcheckout_load_screen')) {
 			$this->document->addScript('catalog/view/javascript/jquery/quickcheckout/quickcheckout.block.js');

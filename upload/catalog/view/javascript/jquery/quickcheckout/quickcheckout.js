@@ -30,12 +30,39 @@ function moduleLoaded(element, spinner) {
 }
 
 function disableCheckout() {
-	$('#quickcheckout-disable').css('opacity', '0.5');
+	var checkout = $('#quickcheckout-disable');
+	var payment = $('#payment');
+
+	// The payment form is rendered inside #quickcheckout-disable. A full-size
+	// overlay also covered interactive payment widgets (Revolut card, Revolut
+	// Pay and payment request buttons), leaving them grey and unclickable.
+	// slideDown() is still at height 0 when disableCheckout() runs, so jQuery's
+	// :visible check is false even though the payment form has just been added.
+	if (payment.length && payment.children().length) {
+		checkout.find('.disable-overlay').remove();
+		checkout.css({
+			'opacity': '1',
+			'position': 'relative'
+		});
+
+		$('#login-box, #payment-address, #shipping-address, #shipping-method, #payment-method, #cart1, #voucher').css({
+			'opacity': '0.5',
+			'pointer-events': 'none'
+		});
+
+		$('#button-payment-method').button('reset').prop('disabled', true).hide();
+		$('#button-payment-method').next('.fa-spinner').remove();
+		$('#terms .notification-info').hide();
+
+		return;
+	}
+
+	checkout.css('opacity', '0.5');
 	
-	var width = $('#quickcheckout-disable').width();
-	var height = $('#quickcheckout-disable').height();
+	var width = checkout.width();
+	var height = checkout.height();
 
 	html = '<div class="disable-overlay" style="position:absolute;top:0;left:0;z-index:99999;background:none;width:' + width + 'px;height:' + height + 'px;text-align:center;"></div>';
 	
-	$('#quickcheckout-disable').css('position', 'relative').append(html);
+	checkout.css('position', 'relative').append(html);
 }
