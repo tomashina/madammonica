@@ -21,7 +21,7 @@ class ModelExtensionModuleHbSeoSnippets extends Model {
 			}
 			
 			if ($this->config->get('hb_snippets_description') == 'description') {
-				$description = preg_replace("/(^[\r\n]*|[\r\n]+)[\s\t]*[\r\n]+/", "", htmlentities(strip_tags($data['description']))); 
+				$description = html_entity_decode(strip_tags(html_entity_decode($data['description'], ENT_QUOTES, 'UTF-8')), ENT_QUOTES, 'UTF-8');
 			}else{
 				$description = $product_info['meta_description'];
 			}
@@ -70,8 +70,7 @@ class ModelExtensionModuleHbSeoSnippets extends Model {
 					}
 				}
 
-				$sku = ($product_info['sku']) ? $product_info['sku'] : $product_id;
-				$mpn = ($product_info['mpn']) ? $product_info['mpn'] : $product_id;
+				$sku = ($product_info['sku']) ? $product_info['sku'] : (string)$product_id;
 
 				$product_images = array();
 				if ($product_info['image']) {
@@ -84,7 +83,10 @@ class ModelExtensionModuleHbSeoSnippets extends Model {
 					}
 				}
 
-				$brand_name = ($product_info['manufacturer'])? $product_info['manufacturer'] : $this->config->get('hb_snippets_brand');
+				$brand_name = ($product_info['manufacturer']) ? $product_info['manufacturer'] : $this->config->get('hb_snippets_brand');
+				if (!$brand_name) {
+					$brand_name = $this->config->get('config_name');
+				}
 				$brand = array('@type' => 'Brand', 'name' => $brand_name );
 
 				$price_date = $this->config->get('hb_snippets_pricevaliddate');
@@ -119,7 +121,7 @@ class ModelExtensionModuleHbSeoSnippets extends Model {
 							'@type'			=> 	'Review',
 							'reviewRating'	=> 	$reviewRating,
 							'author'		=> 	$author,
-							'reviewBody'	=> 	htmlentities($rev['text']),
+							'reviewBody'	=> 	html_entity_decode(strip_tags($rev['text']), ENT_QUOTES, 'UTF-8'),
 							'datePublished'	=>	date('Y-m-d', strtotime($rev['date_added']))
 						);
 					}
@@ -142,26 +144,36 @@ class ModelExtensionModuleHbSeoSnippets extends Model {
 					'availability' 		=> $availability,
 					'price'				=> $price,
 					'priceCurrency'		=> $currencycode,
-					'priceValidUntil'	=> $price_date,
+					'itemCondition'		=> 'https://schema.org/NewCondition',
+					'seller'			=> array('@type' => 'Organization', 'name' => $this->config->get('config_name')),
 				);
+				if ($price_date && strtotime($price_date)) {
+					$offers['priceValidUntil'] = date('Y-m-d', strtotime($price_date));
+				}
 
 				$product_snippet = array(
 					'@context' 			=> 	'https://schema.org/',
 					'@type'				=> 	'Product',
 					'sku'				=> 	$sku,
-					'mpn'				=> 	$mpn,
 					'image'				=> 	$product_images,
 					'name'				=> 	$data['heading_title'],
 					'description'		=> 	$description,
 					'productID'			=> 	$product_id,
 					'brand'				=>	$brand,
-					'review'			=> 	$review_data,
-					'aggregateRating'	=> 	$aggregateRating,
 					'offers'			=> 	$offers,
 				);
+				if (!empty($product_info['mpn'])) {
+					$product_snippet['mpn'] = $product_info['mpn'];
+				}
+				if ($review_data) {
+					$product_snippet['review'] = $review_data;
+				}
+				if ($aggregateRating) {
+					$product_snippet['aggregateRating'] = $aggregateRating;
+				}
 				
 				$ldjson .= '<script type="application/ld+json">';
-				$ldjson .= json_encode($product_snippet);
+				$ldjson .= json_encode($product_snippet, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
 				$ldjson .= "</script>";
 			}
 
@@ -214,9 +226,9 @@ class ModelExtensionModuleHbSeoSnippets extends Model {
 				}
 
 				if ($product_info['quantity'] > 0){
-					$this->document->setOpengraph('og:availability', 'instock');
+					$this->document->setOpengraph('product:availability', 'instock');
 				} else {
-					$this->document->setOpengraph('og:availability', 'oos');
+					$this->document->setOpengraph('product:availability', 'oos');
 				}
 				
 				if (!empty($data['products'])) {

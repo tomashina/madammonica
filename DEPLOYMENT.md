@@ -44,9 +44,36 @@ For subsequent deployments:
 
 ```bash
 cd /home/amds/balidoo.agmedia.rocks
-git pull --ff-only
+git pull --ff-only origin main
 composer install --no-dev --optimize-autoloader
 ```
 
 After deploying OpenCart code, refresh **Extensions > Modifications** and clear
 the application/theme cache from the administration interface.
+
+## Multilingual SEO release
+
+The multilingual metadata and SEO aliases live partly in the database, so this
+release also requires the included idempotent SQL migration. Replace the
+placeholders with the production database credentials from `upload/config.php`:
+
+```bash
+cd /home/amds/balidoo.agmedia.rocks
+mysqldump -u DB_USER -p DB_NAME > ~/madammonica-before-seo-$(date +%F-%H%M).sql
+git pull --ff-only origin main
+composer install --no-dev --optimize-autoloader
+mysql -u DB_USER -p DB_NAME < deploy/seo_metadata_multilingual.sql
+```
+
+Then complete these administration/server steps:
+
+1. Copy the directives from `deploy/apache-performance.conf` into the existing
+   production `upload/.htaccess` once. Do not replace the existing OpenCart
+   rewrite rules.
+2. In OpenCart administration, use **Extensions > Modifications > Refresh**.
+3. Clear the OpenCart application and theme caches.
+4. Verify `/robots.txt`, `/sitemap.xml`, one product in every language, both
+   homepage videos, the language selector and the cookie preferences dialog.
+
+The SQL migration is safe to run again, but always keep a fresh database backup
+before importing it.

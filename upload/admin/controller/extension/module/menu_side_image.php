@@ -4,7 +4,7 @@ class ControllerExtensionModuleMenuSideImage extends Controller {
 	private $route = 'extension/module/menu_side_image';
 	private $code = 'module_menu_side_image';
 	private $default_image = 'catalog/banneri/bnr1.jpeg';
-	private $default_link = '/haljine';
+	private $default_category_id = 258;
 
 	public function index() {
 		$this->load->language($this->route);
@@ -53,10 +53,11 @@ class ControllerExtensionModuleMenuSideImage extends Controller {
 		$data['cancel'] = $this->url->link('common/dashboard', 'user_token=' . $this->session->data['user_token'], true);
 
 		$image = $this->getValue($this->code . '_image', $this->default_image);
-		$link = $this->getValue($this->code . '_link', $this->default_link);
+		$category_id = (int)$this->getValue($this->code . '_category_id', $this->default_category_id);
 		$status = $this->getValue($this->code . '_status', 1);
 
 		$this->load->model('tool/image');
+		$this->load->model('catalog/category');
 
 		if ($image && is_file(DIR_IMAGE . $image)) {
 			$thumb = $this->model_tool_image->resize($image, 100, 100);
@@ -69,17 +70,21 @@ class ControllerExtensionModuleMenuSideImage extends Controller {
 		$data['text_enabled'] = $this->language->get('text_enabled');
 		$data['text_disabled'] = $this->language->get('text_disabled');
 		$data['entry_image'] = $this->language->get('entry_image');
-		$data['entry_link'] = $this->language->get('entry_link');
+		$data['entry_category'] = $this->language->get('entry_category');
 		$data['entry_status'] = $this->language->get('entry_status');
 		$data['help_image'] = $this->language->get('help_image');
+		$data['help_category'] = $this->language->get('help_category');
 		$data['button_save'] = $this->language->get('button_save');
 		$data['button_cancel'] = $this->language->get('button_cancel');
 
 		$data['image'] = $image;
 		$data['thumb'] = $thumb;
 		$data['placeholder'] = $this->model_tool_image->resize('no_image.png', 100, 100);
-		$data['link'] = $link;
+		$category_info = $this->model_catalog_category->getCategory($category_id);
+		$data['category'] = $category_info ? $category_info['name'] : '';
+		$data['category_id'] = $category_id;
 		$data['status'] = $status;
+		$data['user_token'] = $this->session->data['user_token'];
 
 		$data['header'] = $this->load->controller('common/header');
 		$data['column_left'] = $this->load->controller('common/column_left');
@@ -93,7 +98,7 @@ class ControllerExtensionModuleMenuSideImage extends Controller {
 		$this->model_setting_setting->editSetting($this->code, array(
 			$this->code . '_status' => 1,
 			$this->code . '_image' => $this->default_image,
-			$this->code . '_link' => $this->default_link
+			$this->code . '_category_id' => $this->default_category_id
 		));
 
 		$this->load->model('user/user_group');

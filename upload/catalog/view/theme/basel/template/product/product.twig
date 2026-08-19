@@ -1,5 +1,5 @@
 {{ header }}
-<!-- End Glami piXel -->
+<main id="main-content">
 {% if product_layout != "full-width" %}
 <style>
     .product-page .image-area {
@@ -78,19 +78,19 @@
                             < 1) and (stock_badge_status)) %} <span class="badge out_of_stock_badge"><i>{{ basel_text_out_of_stock}}</i></span>
                                 {% endif %}
 
-                                <a class="{% if not images %}link cloud-zoom{% endif %} {% if product_layout == 'full-width' %}link{% else %}cloud-zoom{% endif %}" id="main-image" href="{{ popup }}" rel="position:'inside', showTitle: false"><img src="{{ thumb }}" title="{{ heading_title }}" alt="{{ heading_title }}" /></a>
+                                <a class="{% if not images %}link cloud-zoom{% endif %} {% if product_layout == 'full-width' %}link{% else %}cloud-zoom{% endif %}" id="main-image" href="{{ popup }}" rel="position:'inside', showTitle: false"><img src="{{ thumb }}" title="{{ heading_title }}" alt="{{ heading_title }}" width="{{ img_w }}" height="{{ img_h }}" fetchpriority="high" decoding="async" /></a>
                         </div>
                         {% endif %} {% for image in images %}
                         <div class=" item single-product ppage">
-                            <a class="link {% if product_layout != 'full-width' %}cloud-zoom-gallery locked{% endif %}" href="{{ image.popup }}" rel="useZoom: 'ppage', smallImage: '{{ image.thumb_lg }}'"><img src="{{ image.thumb }}" title="{{ heading_title }}" alt="{{ heading_title }}" /></a>
+                            <a class="link {% if product_layout != 'full-width' %}cloud-zoom-gallery locked{% endif %}" href="{{ image.popup }}" rel="useZoom: 'ppage', smallImage: '{{ image.thumb_lg }}'"><img src="{{ image.thumb }}" title="{{ heading_title }}" alt="{{ heading_title }}" width="{{ img_w }}" height="{{ img_h }}" loading="lazy" decoding="async" /></a>
                         </div>
                         {% endfor %}
 
                         
                {% if upc %}
            <div class=" item single-product ppage nobck">
-                 <video id="sampleMovie" width="100%" height="auto" autoplay controls loop muted playsinline >
-                     <source src="https://balidoo.agmedia.rocks/image/video/{{ upc }}" />
+                 <video id="sampleMovie" width="100%" height="auto" controls loop muted playsinline preload="metadata" aria-label="{{ heading_title }} video">
+                     <source src="image/video/{{ upc }}" type="video/mp4" />
 
                  </video>
 
@@ -149,9 +149,9 @@
                         <span class="review_link">(<a class="hover_uline to_tabs" onclick="$('a[href=\'#tab-review\']').trigger('click'); return false;">{{ reviews }}</a>)</span> {% endif %} {% if price %}
                         <ul class="list-unstyled price">
                             {% if not special %}
-                            <li><span class="live-price">{{ price }}<span></li>
+                            <li><span class="live-price">{{ price }}</span></li>
                                 {% else %}
-                                    <li><span class="price-old">{{ price }}</span><span class="live-price-new">{{ special }}<span></li>
+                                    <li><span class="price-old">{{ price }}</span><span class="live-price-new">{{ special }}</span></li>
                                     <span id="special_countdown"></span> {% endif %}
                         </ul>
 
@@ -178,7 +178,7 @@
 
 
                                 <p>
-                                    <a href="#" data-toggle="modal" data-target="#modal-size"> <img src="image/size_guide.svg" class="filter-icon" alt="Vodič za veličine" /> Vodič za veličine</a>
+                                    <button type="button" class="mm-size-guide-button" data-toggle="modal" data-target="#modal-size"><img src="image/size_guide.svg" class="filter-icon" alt="" aria-hidden="true" /> {{ text_size_guide }}</button>
                                 </p>
                 
 
@@ -271,7 +271,7 @@
                                             <!--   <input type="number" step="1" min="{{ minimum }}" name="quantity" value="{{ minimum }}" id="input-quantity" class="form-control  put-qty" />-->
 
                                             <input type="button" value="-" class="minus">
-                                            <input type="text" step="1" min="1" max="" id="input-quantity" name="quantity" value="{{ minimum }}" title="Qty" class="input-text qty text put-qty" size="4" pattern="" inputmode="">
+                                            <input type="number" step="1" min="1" id="input-quantity" name="quantity" value="{{ minimum }}" title="{{ entry_qty }}" aria-label="{{ entry_qty }}" class="input-text qty text put-qty" size="4" inputmode="numeric">
                                             <input type="button" value="+" class="plus">
                                         </div>
                                         <input type="hidden" name="product_id" value="{{ product_id }}" /> {% if ((qty
@@ -284,7 +284,7 @@
                                 </div>
 
                                 <div class="add-to-wishlist cd-add-to-wishlist cd-wishlist" >
-                          <a onclick="wishlist.add('{{ product_id }}');" class="btn-add-to-wishlist"><img src="image/wishlist.svg" class="ikona" /> </a>
+                          <button type="button" onclick="wishlist.add('{{ product_id }}');" class="btn-add-to-wishlist" aria-label="{{ button_wishlist }}"><img src="image/wishlist.svg" class="ikona" alt="" aria-hidden="true" /></button>
                           </div>
                             </div>
                           <!--  <div class="text-center freeshipping-label"><span>Besplatna dostava za narudžbe iznad 50€</span></div> -->
@@ -1039,7 +1039,7 @@ function updateFreeShippingUI(totalAmountStr) {
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                <h4 class="modal-title">Vodič za veličine</h4>
+                <h4 class="modal-title">{{ text_size_guide }}</h4>
             </div>
             <div class="modal-body">
                 <div class="table-responsive">
@@ -1116,4 +1116,5 @@ function updateFreeShippingUI(totalAmountStr) {
         </div>
     </div>
 </div>
+</main>
 {{ footer }}

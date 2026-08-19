@@ -9,11 +9,12 @@ $_['text_edit'] = 'Edit Navigation Image';
 
 // Entry
 $_['entry_image'] = 'Image';
-$_['entry_link'] = 'Image link';
+$_['entry_category'] = 'Zielkategorie';
 $_['entry_status'] = 'Status';
 
 // Help
 $_['help_image'] = 'This image appears next to the open navigation on desktop and below the navigation on mobile.';
+$_['help_category'] = 'Der Link wird automatisch auf Kroatisch, Englisch und Deutsch erzeugt.';
 
 // Error
 $_['error_permission'] = 'Warning: You do not have permission to modify the navigation image!';

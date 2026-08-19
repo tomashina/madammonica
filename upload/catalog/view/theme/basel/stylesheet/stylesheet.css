@@ -4073,7 +4073,7 @@ h4.follow-title {margin-bottom:5px;}
 	left:0;
 	right:0;
 }
-a.scroll-to-top.top {
+.scroll-to-top.top {
 	width: 45px;
 	height: 45px;
 	line-height:42px;
@@ -4092,7 +4092,7 @@ a.scroll-to-top.top {
 	transition:all 400ms;
 }
 
-a.scroll-to-top.top img.ikona {
+.scroll-to-top.top img.ikona {
 	height:12px;
 }
 
@@ -4116,18 +4116,18 @@ a.scroll-to-top.email {
 }
 
 
-a.scroll-to-top:not(:hover) {
+.scroll-to-top:not(:hover) {
 	color:#000 !important;
 	border-color:#fff;
 	background-color:#fff;
 }
 
-a.scroll-to-top:hover {
+.scroll-to-top:hover {
 	
 	background-color:#d7d7d7;
 }
 
-.offset250 a.scroll-to-top {
+.offset250 .scroll-to-top {
 	visibility:visible;
 	opacity:1;
 	transition:all 400ms;
@@ -6688,7 +6688,7 @@ a.scroll-to-top.email {
 	display: none;
 }
 
- a.scroll-to-top.top {
+ .scroll-to-top.top {
 
 	bottom: 70px;
 	right: 10px;

@@ -12,7 +12,26 @@
 <title>{{ title }}</title>
 <base href="{{ base }}" />
 {% if description %}<meta name="description" content="{{ description }}" />{% endif %}
-{% if keywords %}<meta name="keywords" content= "{{ keywords }}" />{% endif %}
+{% if robots %}<meta name="robots" content="{{ robots }}" />{% endif %}
+{% for alternate in seo_alternates %}
+<link rel="alternate" hreflang="{{ alternate.hreflang }}" href="{{ alternate.href }}" />
+{% endfor %}
+{% if opengraphs is not defined or opengraphs is not iterable or opengraphs|length == 0 %}
+<meta property="og:title" content="{{ title }}" />
+<meta property="og:description" content="{{ description }}" />
+<meta property="og:type" content="{{ og_type }}" />
+<meta property="og:url" content="{{ og_url }}" />
+<meta property="og:site_name" content="Madam Monica" />
+<meta property="og:locale" content="{{ og_locale }}" />
+{% if og_image %}<meta property="og:image" content="{{ og_image }}" />{% endif %}
+{% endif %}
+{% if twittercards is not defined or twittercards is not iterable or twittercards|length == 0 %}
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="{{ title }}" />
+<meta name="twitter:description" content="{{ description }}" />
+{% if og_image %}<meta name="twitter:image" content="{{ og_image }}" />{% endif %}
+{% endif %}
+{% if site_schema %}<script type="application/ld+json">{{ site_schema }}</script>{% endif %}
 <!-- Load essential resources -->
 <script src="catalog/view/javascript/jquery/jquery-2.1.1.min.js"></script>
 <link href="catalog/view/javascript/bootstrap/css/bootstrap.min.css" rel="stylesheet" media="screen" />
@@ -30,7 +49,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Roboto+Slab:wght@100..900&display=swap" rel="stylesheet">
-<link href="catalog/view/theme/basel/stylesheet/stylesheet.css?v=1.3" rel="stylesheet">
+<link href="catalog/view/theme/basel/stylesheet/stylesheet.css?v=1.5" rel="stylesheet">
 <meta name="google-site-verification" content="Vz_AVITRJ1bRMxiZj4S0UCcKRhhIFyovhIHpqqmvhlA" />
 <link rel="stylesheet" href="catalog/view/theme/basel/css/ag-icons.css">
 <!-- Mandatory Theme Settings CSS -->
@@ -46,16 +65,29 @@
 {% endfor %}
 <!-- Page specific meta information -->
 {% for link in links %}
-{% if link.rel == 'image' %}
-<meta property="og:image" content="{{ link.href }}" />
-{% elseif link.rel != 'icon' %}
+{% if link.rel != 'image' and link.rel != 'icon' %}
 <link href="{{ link.href }}" rel="{{ link.rel }}" />
 {% endif %}
 {% endfor %}
-<!-- Analytic tools -->
-{% for analytic in analytics %}
-{{ analytic }}
-{% endfor %}
+<!-- Analytics remains inert until the visitor grants analytics consent. -->
+<script>
+window.mmAnalyticsEncoded='{{ analytics_encoded }}';
+window.mmLoadAnalytics=function(){
+  if(window.mmAnalyticsLoaded||!window.mmAnalyticsEncoded){return false;}
+  window.mmAnalyticsLoaded=true;
+  var holder=document.createElement('div');
+  try{holder.innerHTML=window.atob(window.mmAnalyticsEncoded);}catch(error){return false;}
+  Array.prototype.slice.call(holder.childNodes).forEach(function(node){
+    if(node.nodeName==='SCRIPT'){
+      var script=document.createElement('script');
+      Array.prototype.slice.call(node.attributes||[]).forEach(function(attr){script.setAttribute(attr.name,attr.value);});
+      script.text=node.text||node.textContent||'';
+      document.head.appendChild(script);
+    }else{document.head.appendChild(node.cloneNode(true));}
+  });
+  return true;
+};
+</script>
 {% if basel_styles_status %}
 <!-- Custom Color Scheme -->
 <style id="basel-color-scheme">{{ basel_styles_cache }};</style>
@@ -80,6 +112,7 @@
 
 </head>
 <body class="{{ class }}{{ basel_body_class }}">
+<a class="mm-skip-link" href="#content">{{ lang == 'de-de' ? 'Zum Inhalt springen' : (lang == 'en-gb' ? 'Skip to content' : 'Preskoči na sadržaj') }}</a>
 {% include 'basel/template/common/mobile-nav.twig' %}
 <div class="outer-container main-wrapper">
 {% if notification_status %}

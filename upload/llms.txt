@@ -1,0 +1,31 @@
+# Madam Monica
+
+> Madam Monica is a Croatian designer womenswear brand and online store offering dresses, blazer coats, blouses, jacquard designs and statement pieces.
+
+Official website: https://www.madam-monica.hr/
+Primary language: Croatian (hr-HR)
+Additional languages: English and German
+Contact: info@madam-monica.hr
+
+## Main collections
+
+- Dresses: https://www.madam-monica.hr/haljine
+- Blazer coats and jackets: https://www.madam-monica.hr/sako-jakne
+- Blouses: https://www.madam-monica.hr/bluza
+- Jacquard dresses: https://www.madam-monica.hr/haljine-od-zakarda
+- Full collection: https://www.madam-monica.hr/madam-monica
+
+## Customer information
+
+- Contact: https://www.madam-monica.hr/kontaktirajte-nas
+- Size guide: https://www.madam-monica.hr/vodic-za-velicine
+- Frequently asked questions: https://www.madam-monica.hr/cesta-pitanja-faq
+- Returns, exchanges and complaints: https://www.madam-monica.hr/povrat-robe-zamjena-i-reklamacije
+- Privacy policy: https://www.madam-monica.hr/pravila-zaštite-podataka-i-privatnosti
+
+## Crawling
+
+- XML sitemap: https://www.madam-monica.hr/sitemap.xml
+- Robots policy: https://www.madam-monica.hr/robots.txt
+
+Product pages are the authoritative source for current prices, availability, materials, sizes, delivery and return information.

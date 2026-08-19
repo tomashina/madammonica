@@ -1,0 +1,36 @@
+<div class="mm-consent" id="mm-consent" data-nosnippet hidden>
+  <div class="mm-consent__backdrop" data-mm-consent-close></div>
+  <section class="mm-consent__dialog" role="dialog" aria-modal="true" aria-labelledby="mm-consent-title" aria-describedby="mm-consent-description" tabindex="-1">
+    <button type="button" class="mm-consent__close" data-mm-consent-close aria-label="{{ button_close }}">&times;</button>
+    <div class="mm-consent__accent" aria-hidden="true"></div>
+    <div class="mm-consent__body">
+      <h2 id="mm-consent-title">{{ heading_title }}</h2>
+      <p id="mm-consent-description">{{ text_description }} <a href="{{ privacy_url }}">{{ text_privacy }}</a>.</p>
+
+      <div class="mm-consent__preferences" id="mm-consent-preferences" hidden>
+        <div class="mm-consent__category">
+          <div><strong>{{ text_necessary }}</strong><p>{{ text_necessary_description }}</p></div>
+          <label class="mm-consent__switch"><input type="checkbox" checked disabled aria-label="{{ text_necessary }}"><span aria-hidden="true"></span></label>
+        </div>
+        <div class="mm-consent__category">
+          <div><strong>{{ text_analytics }}</strong><p>{{ text_analytics_description }}</p></div>
+          <label class="mm-consent__switch"><input type="checkbox" id="mm-consent-analytics" aria-label="{{ text_analytics }}"><span aria-hidden="true"></span></label>
+        </div>
+        <div class="mm-consent__category">
+          <div><strong>{{ text_marketing }}</strong><p>{{ text_marketing_description }}</p></div>
+          <label class="mm-consent__switch"><input type="checkbox" id="mm-consent-marketing" aria-label="{{ text_marketing }}"><span aria-hidden="true"></span></label>
+        </div>
+      </div>
+    </div>
+    <div class="mm-consent__actions">
+      <button type="button" class="mm-consent__button mm-consent__button--primary" data-mm-consent-all>{{ button_accept_all }}</button>
+      <button type="button" class="mm-consent__button" data-mm-consent-necessary>{{ button_necessary }}</button>
+      <button type="button" class="mm-consent__button mm-consent__button--link" data-mm-consent-preferences>{{ button_preferences }}</button>
+      <button type="button" class="mm-consent__button mm-consent__button--primary" data-mm-consent-save hidden>{{ button_save }}</button>
+    </div>
+  </section>
+</div>
+<button type="button" class="mm-consent-trigger" data-mm-consent-open aria-label="{{ text_settings }}" title="{{ text_settings }}">
+  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a10 10 0 1 0 10 10 4 4 0 0 1-5-5 4 4 0 0 1-5-5Z"></path><path d="M8.5 8.5h.01M16 15.5h.01M12 12h.01M11 17h.01M7 14h.01"></path></svg>
+</button>
+<script src="catalog/view/theme/basel/js/madam-cookie-consent.js?v=1.1.0" defer></script>

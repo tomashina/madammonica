@@ -1,9 +1,9 @@
 <div class="main-menu-wrapper ">
     <div class="closemenu">
         <div class="icon-element mnu">
-            <a class="shortcut-wrapper menu-closer " title="Navigacija">
+            <button type="button" class="shortcut-wrapper menu-closer" title="Navigacija" aria-label="Navigacija">
                 <i class="icon-line-cross icon"></i>
-            </a>
+            </button>
         </div>
     </div>
 <ul class="mobile-top">
@@ -12,7 +12,7 @@
 
          <div class="search-holder-mobile">
          <label style="display:unset">
-        <input type="text" name="search-mobile" value="" placeholder="Pretraživanje" class="form-control" /><a class="fa fa-search"></a>
+        <input type="text" name="search-mobile" value="" placeholder="{{ text_search }}" class="form-control" aria-label="{{ text_search }}" /><button type="button" class="fa fa-search" aria-label="{{ text_search }}"></button>
         </label>
         </div>
     </li>
@@ -62,7 +62,7 @@
 <!-- HTML CONTENT -->
 <div class="html hover-menu">
 <ul class="bottom-menu">
-<li><i class="icon-mail"></i> <a href="#"> info@madam-monica.hr </a></li>
+<li><i class="icon-mail"></i> <a href="mailto:info@madam-monica.hr">info@madam-monica.hr</a></li>
 
 </ul>
 <small>{{ text_working_hours }}</small>
@@ -74,36 +74,6 @@
 </div>
 </li>
 
-<li class="open has-sub dropdown-wrapper from-bottom">
-<a class="description ">
-<span class="top">
-    <strong>{{ text_follow_us }}</strong></span> 
-    </a>
-<!-- Sub Menu items -->
-<!-- if full width -->
-<div class="" >
-<div class="dropdown-inner">
-<div class="row">
-<div class="col-xs-12 col-sm-12 ">
-<div class="menu-item">
-<!-- HTML CONTENT -->
-<div class="html ">
-<ul>
-
-<li><a href="#" aria-label="Follow us on Instagram"><i class="fa  fa-instagram"></i> Instagram</a></li>
-<li><a href="#" aria-label="Follow us on Facebook"><i class="fa fa-facebook-square"></i> Facebook</a></li>
-</ul>
-
-</div>
-</div>
-</div>
-</div> <!-- row -->
-</div>
-</div>
-</li>
-
-
-
 {% endif %}
 </ul>
 {% endif %}
@@ -111,7 +81,7 @@
 {% if menu_side_image_status and menu_side_image %}
 <div class="menu-side-image">
   <a href="{{ menu_side_image_link }}" class="menu-hero">
-    <img class="zoom_image border-radius-10px" src="{{ menu_side_image }}" alt="">
+    <img class="zoom_image border-radius-10px" src="{{ menu_side_image }}" alt="{{ menu_side_image_alt }}">
   </a>
 </div>
 {% endif %}

@@ -38,6 +38,7 @@ $_['text_week']					= 'Woche(n)';
 $_['text_semi_month']			= '14-Tägig';
 $_['text_month']				= 'Monat(e)';
 $_['text_year']					= 'Jahr(e)';
+$_['text_size_guide']			= 'Größenratgeber';
 
 // Entry
 $_['entry_qty']			= 'Menge';

@@ -1,12 +1,4 @@
 {{ header }}
-<!-- Glami piXel for KOZO.hr -->
-<script>
-(function(f, a, s, h, i, o, n) {f['GlamiTrackerObject'] = i; 
-    f[i]=f[i]||function(){(f[i].q=f[i].q||[]).push(arguments)};o=a.createElement(s), 
-    n=a.getElementsByTagName(s)[0];o.async=1;o.src=h;n.parentNode.insertBefore(o,n) 
-})(window, document, 'script', '//www.glami.hr/js/compiled/pt.js', 'glami');
-glami('create', '78FEF97D04F20D6F870D45C4534F59BF', 'hr', 'HEADER'); glami('HEADER.track', 'PageView');
-</script>
 
 {% if is_layout_kids or is_layout_underwear or is_layout_kozo_men or is_layout_kozo_women %}
 
@@ -67,9 +59,5 @@ glami('create', '78FEF97D04F20D6F870D45C4534F59BF', 'hr', 'HEADER'); glami('HEAD
 
 
 
-
-
-
-<!-- End Glami piXel -->
-
+{% if faq_schema %}<script type="application/ld+json">{{ faq_schema }}</script>{% endif %}
 {{ footer }}

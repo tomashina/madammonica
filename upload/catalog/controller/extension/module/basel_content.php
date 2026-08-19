@@ -2,6 +2,7 @@
 class ControllerExtensionModuleBaselContent extends Controller {
 	public function index($setting) {
 		static $module = 1;
+		static $content_video = 0;
 		
 		$data['module'] = $module;
 		
@@ -159,6 +160,21 @@ class ControllerExtensionModuleBaselContent extends Controller {
 				);
 
 				$data1 = html_entity_decode(str_replace($find,$replace,$column['data1'][$this->config->get('config_language_id')]), ENT_QUOTES, 'UTF-8');
+				$data1 = preg_replace_callback('/<video\b([^>]*)>/i', function($matches) use (&$content_video) {
+					$attributes = preg_replace('/\s+preload=("|\')[^"\']*("|\')/i', '', $matches[1]);
+					$attributes = preg_replace('/\s+controls(?=\s|=|$)(?:=("|\')[^"\']*("|\'))?/i', '', $attributes);
+					foreach (array('autoplay', 'muted', 'loop', 'playsinline', 'webkit-playsinline') as $attribute) {
+						if (!preg_match('/\s' . preg_quote($attribute, '/') . '(?:\s|=|$)/i', $attributes)) {
+							$attributes .= ' ' . $attribute . '="' . $attribute . '"';
+						}
+					}
+					$preload = $content_video === 0 ? 'auto' : 'metadata';
+					$content_video++;
+					return '<video' . $attributes . ' preload="' . $preload . '" data-mm-managed-video>';
+				}, $data1);
+				$data1 = preg_replace_callback('/(<a\b[^>]*\bhref=("|\'))([^"\']+)(\2)/i', function($matches) {
+					return $matches[1] . $this->localizeInternalUrl($matches[3]) . $matches[4];
+				}, $data1);
 					
                 } else {
                     $data1 = false;
@@ -183,13 +199,13 @@ class ControllerExtensionModuleBaselContent extends Controller {
                 }
 				
 				if (isset($column['data5'])){
-					$data5 = $column['data5'];
+					$data5 = $this->localizeInternalUrl($column['data5']);
                 } else {
                     $data5 = false;
                 }
 				
 				if (isset($column['data6'])){
-					$data6 = $column['data6'];
+					$data6 = $this->localizeInternalUrl($column['data6']);
                 } else {
                     $data6 = false;
                 }
@@ -225,5 +241,26 @@ class ControllerExtensionModuleBaselContent extends Controller {
 		
 		if ($this->config->get('theme_default_directory') == 'basel')
 		return $this->load->view('extension/module/basel_content', $data);
+	}
+
+	private function localizeInternalUrl($target) {
+		$target = trim(html_entity_decode((string)$target, ENT_QUOTES, 'UTF-8'));
+		if (!$target || $target[0] === '#' || preg_match('/^(?:[a-z][a-z0-9+.-]*:|\/\/)/i', $target)) {
+			return $target;
+		}
+
+		$keyword = trim(rawurldecode((string)parse_url($target, PHP_URL_PATH)), '/');
+		$query = $this->db->query("SELECT localized.keyword FROM " . DB_PREFIX . "seo_url source JOIN " . DB_PREFIX . "seo_url localized ON localized.`query` = source.`query` AND localized.store_id = source.store_id WHERE source.keyword = '" . $this->db->escape($keyword) . "' AND source.store_id = '" . (int)$this->config->get('config_store_id') . "' AND localized.language_id = '" . (int)$this->config->get('config_language_id') . "' LIMIT 1");
+
+		if (!$query->num_rows || !$query->row['keyword']) {
+			return $target;
+		}
+
+		$url = rtrim($this->config->get('config_ssl'), '/') . '/' . ltrim($query->row['keyword'], '/');
+		if ($this->session->data['language'] !== $this->config->get('config_language')) {
+			$url .= '?language=' . rawurlencode($this->session->data['language']);
+		}
+
+		return $url;
 	}
 }

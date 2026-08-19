@@ -1,4 +1,6 @@
 {{ header }}
+<main id="main-content">
+<h1 class="sr-only">{{ seo_heading }}</h1>
 <div class="container">
   <div class="row">{{ column_left }}
     {% if column_left and column_right %}
@@ -11,4 +13,11 @@
     <div id="content" class="{{ class }}">{{ content_top }}{{ content_bottom }}</div>
     {{ column_right }}</div>
 </div>
+{% if seo_intro %}
+<section class="container mm-home-intro" aria-labelledby="mm-home-intro-title">
+  <h2 id="mm-home-intro-title" class="h3">{{ seo_heading }}</h2>
+  <p>{{ seo_intro }}</p>
+</section>
+{% endif %}
+</main>
 {{ footer }}

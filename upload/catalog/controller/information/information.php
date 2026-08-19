@@ -23,6 +23,7 @@ class ControllerInformationInformation extends Controller {
 			$this->document->setTitle($information_info['meta_title']);
 			$this->document->setDescription($information_info['meta_description']);
 			$this->document->setKeywords($information_info['meta_keyword']);
+			$this->document->addLink($this->url->link('information/information', 'information_id=' . $information_id), 'canonical');
 
 			$data['breadcrumbs'][] = array(
 				'text' => $information_info['title'],
@@ -31,6 +32,7 @@ class ControllerInformationInformation extends Controller {
 
 			$data['heading_title'] = $information_info['title'];
 			$data['description']   = html_entity_decode($information_info['description'], ENT_QUOTES, 'UTF-8');
+			$data['faq_schema'] = ($information_id === 21) ? $this->buildFaqSchema($data['description']) : '';
 			$data['continue']      = $this->url->link('common/home');
 
 			// =======================
@@ -143,6 +145,33 @@ class ControllerInformationInformation extends Controller {
 
 			$this->response->setOutput($this->load->view('error/not_found', $data));
 		}
+	}
+
+	private function buildFaqSchema($html) {
+		if (!preg_match_all('/<h2[^>]*>(.*?)<\/h2>(.*?)(?=<h2[^>]*>|$)/is', $html, $matches, PREG_SET_ORDER)) {
+			return '';
+		}
+
+		$entities = array();
+		foreach ($matches as $match) {
+			$question = trim(preg_replace('/\s+/', ' ', html_entity_decode(strip_tags($match[1]), ENT_QUOTES, 'UTF-8')));
+			$answer = trim(preg_replace('/\s+/', ' ', html_entity_decode(strip_tags($match[2]), ENT_QUOTES, 'UTF-8')));
+			$question = preg_replace('/^\d+\.\s*/u', '', $question);
+
+			if ($question && $answer) {
+				$entities[] = array(
+					'@type' => 'Question',
+					'name' => $question,
+					'acceptedAnswer' => array('@type' => 'Answer', 'text' => $answer)
+				);
+			}
+		}
+
+		if (!$entities) {
+			return '';
+		}
+
+		return json_encode(array('@context' => 'https://schema.org', '@type' => 'FAQPage', 'mainEntity' => $entities), JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
 	}
 
 	public function agree() {

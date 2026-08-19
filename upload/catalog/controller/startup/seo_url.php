@@ -6,6 +6,18 @@ class ControllerStartupSeoUrl extends Controller {
 			$this->url->addRewrite($this);
 		}
 
+		// Herd and some Nginx setups forward clean paths to index.php without
+		// Apache's _route_ parameter. Recover it from the original request path.
+		if (!isset($this->request->get['_route_']) && !isset($this->request->get['route']) && !empty($this->request->server['REQUEST_URI'])) {
+			$path = trim(rawurldecode((string)parse_url($this->request->server['REQUEST_URI'], PHP_URL_PATH)), '/');
+
+			if ($path === 'sitemap.xml') {
+				$this->request->get['route'] = 'extension/feed/google_sitemap';
+			} elseif ($path && $path !== 'index.php') {
+				$this->request->get['_route_'] = $path;
+			}
+		}
+
 		// Decode URL
 		if (isset($this->request->get['_route_'])) {
 			$parts = explode('/', $this->request->get['_route_']);
@@ -16,7 +28,7 @@ class ControllerStartupSeoUrl extends Controller {
 			}
 
 			foreach ($parts as $part) {
-				$query = $this->db->query("SELECT * FROM " . DB_PREFIX . "seo_url WHERE keyword = '" . $this->db->escape($part) . "' AND store_id = '" . (int)$this->config->get('config_store_id') . "'");
+				$query = $this->db->query("SELECT * FROM " . DB_PREFIX . "seo_url WHERE keyword = '" . $this->db->escape($part) . "' AND store_id = '" . (int)$this->config->get('config_store_id') . "' AND language_id = '" . (int)$this->config->get('config_language_id') . "' LIMIT 1");
 
 				if ($query->num_rows) {
 					$url = explode('=', $query->row['query']);
@@ -76,7 +88,13 @@ class ControllerStartupSeoUrl extends Controller {
 
 		foreach ($data as $key => $value) {
 			if (isset($data['route'])) {
-				if (($data['route'] == 'product/product' && $key == 'product_id') || (($data['route'] == 'product/manufacturer/info' || $data['route'] == 'product/product') && $key == 'manufacturer_id') || ($data['route'] == 'information/information' && $key == 'information_id')) {
+				if ($key == 'route' && $data['route'] != 'common/home') {
+					$route_query = $this->db->query("SELECT * FROM " . DB_PREFIX . "seo_url WHERE `query` = '" . $this->db->escape($data['route']) . "' AND store_id = '" . (int)$this->config->get('config_store_id') . "' AND language_id = '" . (int)$this->config->get('config_language_id') . "' LIMIT 1");
+
+					if ($route_query->num_rows && $route_query->row['keyword']) {
+						$url .= '/' . $route_query->row['keyword'];
+					}
+				} elseif (($data['route'] == 'product/product' && $key == 'product_id') || (($data['route'] == 'product/manufacturer/info' || $data['route'] == 'product/product') && $key == 'manufacturer_id') || ($data['route'] == 'information/information' && $key == 'information_id')) {
 					$query = $this->db->query("SELECT * FROM " . DB_PREFIX . "seo_url WHERE `query` = '" . $this->db->escape($key . '=' . (int)$value) . "' AND store_id = '" . (int)$this->config->get('config_store_id') . "' AND language_id = '" . (int)$this->config->get('config_language_id') . "'");
 
 					if ($query->num_rows && $query->row['keyword']) {
@@ -106,6 +124,10 @@ class ControllerStartupSeoUrl extends Controller {
 
 		if ($url) {
 			unset($data['route']);
+
+			if (isset($this->session->data['language']) && $this->session->data['language'] !== $this->config->get('config_language')) {
+				$data['language'] = $this->session->data['language'];
+			}
 
 			$query = '';
 

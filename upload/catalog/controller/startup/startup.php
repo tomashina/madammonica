@@ -44,8 +44,15 @@ class ControllerStartupStartup extends Controller {
 		$this->load->model('localisation/language');
 		
 		$languages = $this->model_localisation_language->getLanguages();
+
+		// A stable language query parameter gives every translated page its own
+		// crawlable URL while retaining backward compatibility with the current
+		// session-based OpenCart language switcher.
+		if (isset($this->request->get['language']) && isset($languages[$this->request->get['language']]) && $languages[$this->request->get['language']]['status']) {
+			$code = $this->request->get['language'];
+		}
 		
-		if (isset($this->session->data['language'])) {
+		if (!$code && isset($this->session->data['language'])) {
 			$code = $this->session->data['language'];
 		}
 				

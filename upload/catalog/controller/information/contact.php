@@ -5,7 +5,16 @@ class ControllerInformationContact extends Controller {
 	public function index() {
 		$this->load->language('information/contact');
 
-		$this->document->setTitle($this->language->get('heading_title'));
+		$seo = array(
+			'hr-hr' => array('title' => 'Kontakt i korisnička podrška | Madam Monica', 'description' => 'Kontaktirajte Madam Monica za pitanja o proizvodima, veličinama, narudžbama, plaćanju, dostavi, povratu i zamjenama. Dostupni smo pon–pet, 9–17 h.'),
+			'en-gb' => array('title' => 'Contact and Customer Support | Madam Monica', 'description' => 'Contact Madam Monica about products, sizing, orders, payment, delivery, returns and exchanges. Customer support is available Monday to Friday, 9 am–5 pm.'),
+			'de-de' => array('title' => 'Kontakt und Kundenservice | Madam Monica', 'description' => 'Kontaktieren Sie Madam Monica bei Fragen zu Produkten, Größen, Bestellungen, Zahlung, Lieferung, Rückgabe und Umtausch. Mo–Fr, 9–17 Uhr.')
+		);
+		$language_code = $this->session->data['language'];
+		$current_seo = isset($seo[$language_code]) ? $seo[$language_code] : $seo['hr-hr'];
+		$this->document->setTitle($current_seo['title']);
+		$this->document->setDescription($current_seo['description']);
+		$this->document->addLink($this->url->link('information/contact'), 'canonical');
 
 		if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validate()) {
 			$mail = new Mail($this->config->get('config_mail_engine'));
