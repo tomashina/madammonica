@@ -140,6 +140,21 @@
         </div>
       </div>
     </div>
+    <div id="ercune-sales-order-panel" class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title"><i class="fa fa-exchange"></i> Ercune</h3>
+      </div>
+      <div class="panel-body">
+        <div class="row">
+          <div class="col-sm-6">
+            <button type="button" id="button-ercune-offer" onclick="ercuneSendOrder('offer')" data-loading-text="{{ text_loading }}" data-toggle="tooltip" title="Pošalji ponudu u Ercune" class="btn btn-warning btn-block"><i class="fa fa-file-text-o"></i> Pošalji ponudu</button>
+          </div>
+          <div class="col-sm-6">
+            <button type="button" id="button-ercune-order" onclick="ercuneSendOrder('order')" data-loading-text="{{ text_loading }}" data-toggle="tooltip" title="Pošalji narudžbu u Ercune" class="btn btn-success btn-block"><i class="fa fa-paper-plane"></i> Pošalji narudžbu</button>
+          </div>
+        </div>
+      </div>
+    </div>
     <div class="panel panel-default">
       <div class="panel-heading">
         <h3 class="panel-title"><i class="fa fa-info-circle"></i> {{ text_order }}</h3>
@@ -658,5 +673,42 @@
 	  });
   });
   //--></script>
+  <script type="text/javascript"><!--
+  function ercuneSendOrder(type) {
+    var $button = $('#button-ercune-' + type);
+
+    $.ajax({
+      url: 'index.php?route=extension/module/ercune_sales_order/send&user_token={{ user_token }}&order_id={{ order_id }}&type=' + encodeURIComponent(type),
+      type: 'post',
+      dataType: 'json',
+      beforeSend: function() {
+        $button.button('loading');
+      },
+      complete: function() {
+        $button.button('reset');
+      },
+      success: function(json) {
+        $('.alert-dismissible').remove();
+
+        if (json.error) {
+          $('#content > .container-fluid').prepend('<div class="alert alert-danger alert-dismissible"><i class="fa fa-exclamation-circle"></i> ' + json.error + '<button type="button" class="close" data-dismiss="alert">&times;</button></div>');
+        }
+
+        if (json.success) {
+          var message = json.success;
+
+          if (json.number) {
+            message += ' Broj dokumenta: ' + json.number;
+          }
+
+          $('#content > .container-fluid').prepend('<div class="alert alert-success alert-dismissible"><i class="fa fa-check-circle"></i> ' + message + '<button type="button" class="close" data-dismiss="alert">&times;</button></div>');
+        }
+      },
+      error: function(xhr, ajaxOptions, thrownError) {
+        alert(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+      }
+    });
+  }
+  //--></script>
 </div>
-{{ footer }} 
+{{ footer }}

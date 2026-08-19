@@ -1003,10 +1003,35 @@ class ControllerExtensionPaymentRevolut extends Controller
 
     public function getRevolutAmount($amount, $currency_code)
     {
-        $formatter = new NumberFormatter('en_GB', NumberFormatter::CURRENCY);
-        $formatter->setTextAttribute(NumberFormatter::CURRENCY_CODE, $currency_code);
-        $fractionalLength = $formatter->getAttribute(NumberFormatter::FRACTION_DIGITS);
+        $currency_code = strtoupper((string) $currency_code);
+
+        if (class_exists('NumberFormatter')) {
+            $formatter = new NumberFormatter('en_GB', NumberFormatter::CURRENCY);
+            $formatter->setTextAttribute(NumberFormatter::CURRENCY_CODE, $currency_code);
+            $fractionalLength = $formatter->getAttribute(NumberFormatter::FRACTION_DIGITS);
+        } else {
+            // PHP intl is not available on every hosting plan. Revolut expects
+            // amounts in the currency's minor unit, so keep a local ISO 4217
+            // fallback instead of failing the checkout.
+            $zeroDecimalCurrencies = [
+                'BIF', 'CLP', 'DJF', 'GNF', 'ISK', 'JPY', 'KMF', 'KRW',
+                'PYG', 'RWF', 'UGX', 'UYI', 'VND', 'VUV', 'XAF', 'XOF', 'XPF'
+            ];
+            $threeDecimalCurrencies = [
+                'BHD', 'IQD', 'JOD', 'KWD', 'LYD', 'OMR', 'TND'
+            ];
+
+            if (in_array($currency_code, $zeroDecimalCurrencies, true)) {
+                $fractionalLength = 0;
+            } elseif (in_array($currency_code, $threeDecimalCurrencies, true)) {
+                $fractionalLength = 3;
+            } else {
+                $fractionalLength = 2;
+            }
+        }
+
         $minorUnitFactor = pow(10, $fractionalLength);
+
         return (int) round($amount * $minorUnitFactor);
     }
 
