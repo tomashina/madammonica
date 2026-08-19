@@ -1,0 +1,127 @@
+<div class="header-wrapper header6">
+
+{% if top_line_style %}
+<div class="top_line">
+  <div class="container {{ top_line_width }}">
+    <div class="table">
+        <div class="table-cell left ">
+            <div class="links">
+            <ul>
+            {% include 'basel/template/common/static_links.twig' %}
+            </ul>
+            </div>
+        </div>
+        <div class="table-cell text-right ">
+           
+            {% if lang_curr_title  %}
+            <div class="setting-ul">
+            <div class="setting-li dropdown-wrapper from-left lang-curr-trigger nowrap"><a>
+            <span> {{ lang_curr_title }}</span>
+            </a>
+            <div class="dropdown-content dropdown-right lang-curr-wrapper">
+            {{ language }}
+            {{ currency }}
+            </div>
+            </div>
+            </div>
+            {% endif %}
+            </div>
+        </div>
+    </div> <!-- .table ends -->
+  </div> <!-- .container ends -->
+</div> <!-- .top_line ends -->
+{% endif %}
+
+<span class="table header-main sticky-header-placeholder slidedown ">&nbsp;</span>
+<div class=" outer-container header-style sticky-header">
+  <div class="container {{ main_header_width }}">
+    <div class="table header-main {{ main_menu_align }}">
+   
+   
+    <div class="table-cell text-left w40 menu-cell hidden-xs hidden-sm secondary_menu_desktop">
+           <div class="table">
+       
+        
+    <div class="table-cell w40 search-cell {{ basel_search_scheme }}">
+         {{ basel_search}} 
+        </div>
+
+
+
+    </div>
+    </div>
+
+     <div class="table-cell text-center  w20 logo">
+        {% if logo %}
+        <div id="logo">
+        <a href="{{ home }}"><img src="image/madam-monika-logo.svg" title="{{ name }}" alt="{{ name }}" /></a>
+        </div>
+        {% endif %}
+    </div> 
+  
+    <div class="table-cell w40 btns shortcuts text-right">
+       
+       <div class="font-zero">
+           <div class="icon-element is_wishlist">
+
+               {% if logged %}
+                   <a class="shortcut-wrapper wishlist " title="Moj račun" href="{{ login }}"><i class="ag-icon-user icon"></i></a><a class="shortcut-wrapper wishlist ms-logout"  title="Odjava" href="{{ logout }}"> Odjava
+               </a>
+               {% else %}
+                   <a class="shortcut-wrapper wishlist" title="Moj račun" href="{{ login }}">
+                       <div class="wishlist-hover"><i class="ag-icon-user icon"></i></div>
+                   </a>
+               {% endif %}
+           </div>
+
+
+           <div class="icon-element is_wishlist ">
+        <a class="shortcut-wrapper wishlist" href="{{ wishlist }}">
+        <div class="wishlist-hover"><img src="image/wishlist.svg" class="ikona" /><span class="counter wishlist-counter">{{ wishlist_counter }}</span></div>
+        </a>
+        </div>
+        
+        <div class="icon-element catalog_hide">
+        <div id="cart" class="dropdown-wrapper from-top">
+        <a href="{{ shopping_cart }}" class="shortcut-wrapper cart">
+        <i id="cart-icon" class="ag-icon-cart icon"></i> <span id="cart-total" class="nowrap">
+        <span class="counter cart-total-items">{{ cart_items }}</span>
+        </a>
+        <div class="dropdown-content dropdown-right hidden-sm hidden-xs">
+        {{ cart }}
+        </div>
+        </div>
+        </div>
+        
+        <div class="icon-element">
+        <a class="shortcut-wrapper menu-trigger ">
+        <i class="icon-line-menu icon"></i>
+        </a>
+        </div>
+        
+       </div>
+        
+    </div>
+    
+    </div> <!-- .table.header_main ends -->
+  </div> <!-- .container ends -->
+</div> <!-- .sticky ends -->
+
+<div class="  slidedown outer-container header-bottom  ">
+<div class="container {{ main_header_width }}">
+
+
+    <div class="table">
+       
+        
+         <!-- <div class="table-cell w100 search-cell {{ basel_search_scheme }}">
+         {{ basel_search}} 
+        </div>-->
+
+
+
+    </div>
+</div><!-- .container ends -->
+</div>
+
+</div> <!-- .header_wrapper ends -->

@@ -1,0 +1,65 @@
+<?php
+
+$_['text_checkout_option'] = 'Anmeldung';
+$_['text_checkout_account'] = 'Kundendaten';
+$_['text_checkout_payment_address'] = 'Rechnungsadresse';
+$_['text_checkout_shipping_address'] = 'Lieferadresse';
+$_['text_checkout_shipping_method'] = 'Versandart';
+$_['text_checkout_payment_method'] = 'Zahlungsmethode';
+$_['text_checkout_confirm'] = 'Bestellung bestätigen';
+$_['text_agree'] = 'Ich stimme den <a class="agree" href="%s" alt="%s"><b>%s</b></a> zu.';
+$_['text_create_account'] = 'Ein Kundenkonto erstellen oder eine <strong>R1-Rechnung</strong> anfordern.';
+$_['text_or'] = '-- ODER --';
+$_['text_please_wait'] = 'Bitte warten...';
+$_['text_coupon'] = 'Erfolg: Ihr Gutscheincode wurde angewendet!';
+$_['text_coupon_removed'] = 'Erfolg: Ihr Gutscheincode wurde entfernt!';
+$_['text_voucher'] = 'Erfolg: Ihr Geschenkgutschein wurde angewendet!';
+$_['text_voucher_removed'] = 'Erfolg: Ihr Geschenkgutschein wurde entfernt!';
+$_['text_reward'] = 'Erfolg: Ihr Rabatt durch Bonuspunkte wurde angewendet!';
+$_['text_reward_removed'] = 'Erfolg: Ihr Rabatt durch Bonuspunkte wurde entfernt!';
+$_['text_use_coupon'] = 'Anwenden';
+$_['text_use_voucher'] = 'Anwenden';
+$_['text_use_reward'] = 'Anwenden';
+$_['text_estimated_delivery'] = 'Voraussichtliche Lieferung:';
+$_['text_delivery'] = 'Lieferdatum:';
+$_['text_points'] = 'Bonuspunkte: %s';
+$_['text_loading'] = 'Lädt...';
+$_['text_survey'] = 'Personalisierte Nachricht:';
+$_['text_order_comments'] = 'Bestellkommentare:';
+$_['text_image'] = 'Bild';
+$_['text_name'] = 'Produkt';
+$_['text_quantity'] = 'Menge';
+$_['text_price'] = 'Einzelpreis';
+$_['text_total'] = 'Gesamt';
+$_['column_image'] = 'Bild';
+$_['column_name'] = 'Name';
+$_['column_model'] = 'Modell';
+$_['column_quantity'] = 'Menge';
+$_['column_price'] = 'Preis';
+$_['column_total'] = 'Gesamt';
+$_['entry_coupon'] = 'Gutscheincode eingeben:';
+$_['entry_voucher'] = 'Geschenkgutschein eingeben:';
+$_['entry_reward'] = 'Anzahl der zu verwendenden Bonuspunkte eingeben (Max. %s, Verfügbar %s):';
+$_['error_fax'] = 'Fax muss zwischen 3 und 32 Zeichen lang sein!';
+$_['error_company'] = 'Der Firmenname muss zwischen 3 und 32 Zeichen lang sein!';
+$_['error_address_2'] = 'Adresse 2 muss zwischen 3 und 128 Zeichen lang sein!';
+$_['error_coupon'] = 'Warnung: Der Gutscheincode ist ungültig, abgelaufen oder das Nutzungslimit wurde erreicht!';
+$_['error_voucher'] = 'Warnung: Der Geschenkgutschein ist ungültig oder das Guthaben wurde aufgebraucht!';
+$_['error_survey'] = 'Warnung: Die Umfragefrage muss beantwortet werden!';
+$_['error_delivery'] = 'Warnung: Ein Lieferdatum ist erforderlich!';
+$_['error_maximum'] = 'Warnung: Die maximale Anzahl an anwendbaren Punkten beträgt %s!';
+$_['error_reward'] = 'Warnung: Bitte geben Sie die Anzahl der zu verwendenden Bonuspunkte ein!';
+$_['error_points'] = 'Warnung: Sie haben nicht %s Bonuspunkte!';
+$_['error_minimum_order'] = 'Warnung: Sie benötigen eine Mindestbestellsumme von %s, bevor Sie zur Kasse gehen können.';
+$_['error_comment'] = 'Warnung: Ein Bestellkommentar ist erforderlich.';
+$_['text_basket'] = 'Warenkorb';
+$_['button_continue'] = 'Einkauf abschließen';
+$_['text_contact']             = 'Kontakt';
+$_['text_checkout_email_hint'] = 'Geben Sie die E-Mail-Adresse ein, an die wir die Bestellbestätigung, kaufbezogene Mitteilungen und Status-Updates zur Bestellung senden.';
+$_['text_need_r1']             = 'Ich benötige eine R1-Rechnung (Firmenrechnung)';
+$_['text_your_details']        = 'Ihre Daten';
+$_['text_company_details']     = 'Firmendaten';
+
+$_['text_accept_before_confirm']      = 'Vor der Bestellbestätigung müssen Sie zustimmen.';
+
+

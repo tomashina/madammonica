@@ -1,0 +1,121 @@
+<div class="main-menu-wrapper ">
+    <div class="closemenu">
+        <div class="icon-element mnu">
+            <a class="shortcut-wrapper menu-closer " title="Navigacija">
+                <i class="icon-line-cross icon"></i>
+            </a>
+        </div>
+    </div>
+<ul class="mobile-top">
+    {% if header_search %}
+    <li class="search" style="height: 44px;">
+
+         <div class="search-holder-mobile">
+         <label style="display:unset">
+        <input type="text" name="search-mobile" value="" placeholder="Pretraživanje" class="form-control" /><a class="fa fa-search"></a>
+        </label>
+        </div>
+    </li>
+    {% endif %}
+</ul>
+<ul class="mobile-top lang">
+     <li class="mobile-lang-curr "></li>
+    </ul>
+
+{% if secondary_menu %}
+<ul class="categories">
+    {% if secondary_menu == 'oc' %}
+        <!-- Default menu -->
+        {{ default_menu }}
+    {% elseif secondary_menu is defined %}
+        <!-- Mega menu -->
+        {% for key, row in secondary_menu_mobile %}
+            {% include 'basel/template/common/menus/mega_menu.twig' %}
+        {% endfor %}
+    {% endif %}
+</ul>
+{% endif %}
+
+
+{% if primary_menu %}
+<ul class="categories">
+{% if primary_menu == 'oc' %}
+<!-- Default menu -->
+{{ default_menu }}
+{% elseif primary_menu is defined %}
+<!-- Mega menu -->
+{% for key, row in primary_menu_mobile %}
+{% include 'basel/template/common/menus/mega_menu.twig' %}
+{% endfor %}
+
+
+
+<li class="open has-sub dropdown-wrapper from-bottom">
+
+<!-- Sub Menu items -->
+<!-- if full width -->
+<div class="narrow" >
+<div class="dropdown-inner">
+<div class="row">
+<div class="col-xs-12 col-sm-12 ">
+<div class="menu-item">
+<!-- HTML CONTENT -->
+<div class="html hover-menu">
+<ul class="bottom-menu">
+<li><i class="icon-mail"></i> <a href="#"> info@madam-monica.hr </a></li>
+
+</ul>
+<small>{{ text_working_hours }}</small>
+</div>
+</div>
+</div>
+</div> <!-- row -->
+</div>
+</div>
+</li>
+
+<li class="open has-sub dropdown-wrapper from-bottom">
+<a class="description ">
+<span class="top">
+    <strong>{{ text_follow_us }}</strong></span> 
+    </a>
+<!-- Sub Menu items -->
+<!-- if full width -->
+<div class="" >
+<div class="dropdown-inner">
+<div class="row">
+<div class="col-xs-12 col-sm-12 ">
+<div class="menu-item">
+<!-- HTML CONTENT -->
+<div class="html ">
+<ul>
+
+<li><a href="#" aria-label="Follow us on Instagram"><i class="fa  fa-instagram"></i> Instagram</a></li>
+<li><a href="#" aria-label="Follow us on Facebook"><i class="fa fa-facebook-square"></i> Facebook</a></li>
+</ul>
+
+</div>
+</div>
+</div>
+</div> <!-- row -->
+</div>
+</div>
+</li>
+
+
+
+{% endif %}
+</ul>
+{% endif %}
+
+{% if menu_side_image_status and menu_side_image %}
+<div class="menu-side-image">
+  <a href="{{ menu_side_image_link }}" class="menu-hero">
+    <img class="zoom_image border-radius-10px" src="{{ menu_side_image }}" alt="">
+  </a>
+</div>
+{% endif %}
+</div>
+
+
+<span class="body-cover menu-closer"></span>

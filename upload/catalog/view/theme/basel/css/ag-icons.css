@@ -1,0 +1,61 @@
+@font-face {
+  font-family: 'ag-icons';
+  src: url('../fonts/ag-icons.woff2') format('woff2'),
+       url('../fonts/ag-icons.woff') format('woff');
+  font-weight: 400;
+  font-style: normal;
+  font-display: block;
+}
+
+/* Osnovni stil za sve AG ikone */
+[class^="ag-icon-"]:before,
+[class*=" ag-icon-"]:before {
+  font-family: 'ag-icons';
+  font-style: normal;
+  font-weight: normal;
+  speak: none;
+  display: inline-block;
+  text-decoration: none;
+  text-align: center;
+  line-height: 1;
+  vertical-align: middle;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* === Ikone === */
+.ag-icon-search:before     { content: "\e901"; } /* lupa */
+.ag-icon-user:before       { content: "\e921"; } /* korisnik / profil */
+.ag-icon-wishlist:before   { content: "\e903"; } /* srce */
+.ag-icon-bag:before        { content: "\e904"; } /* torba / košarica */
+.ag-icon-close:before      { content: "\e905"; } /* x / zatvori */
+
+.ag-icon-arrow:before      { content: "\e907"; } /* strelica */
+.ag-icon-location:before   { content: "\e908"; } /* lokacija / pin */
+.ag-icon-phone:before      { content: "\e909"; } /* telefon */
+.ag-icon-mail:before       { content: "\e90a"; } /* pošta / email */
+
+.ag-icon-magnifier:before  { content: "\e915"; } /* lupa (alternativna) */
+.ag-icon-cart:before       { content: "\e901"; } /* kolica (isto kao search u fontu) */
+
+
+.ag-icon-user.icon, .ag-icon-magnifier, .ag-icon-cart {
+  font-size: 24px !important;
+  line-height: 44px;
+  height: 30px;
+  
+
+}
+
+.ag-icon-magnifier {
+ 
+  line-height: 34px;
+ 
+}
+
+#button-cart .ag-icon-cart {
+  font-size: 18px !important;
+  margin-right: 5px;
+  
+
+}

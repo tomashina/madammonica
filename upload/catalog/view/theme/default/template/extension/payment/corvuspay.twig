@@ -1,0 +1,11 @@
+<form name="pay" action="{{ action|e }}" method="post">
+  {% for name, value in parameters %}
+    <input type="hidden" name="{{ name|e }}" value="{{ value|e }}">
+  {% endfor %}
+  <input type="hidden" name="signature" value="{{ signature|e }}">
+
+  <div class="buttons pull-right">
+    <input type="submit" value="{{ button_confirm|e }}" class="btn btn-primary">
+  </div>
+  <div class="clearfix"></div>
+</form>
