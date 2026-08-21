@@ -229,6 +229,15 @@ class ControllerProductProduct extends Controller {
 
 			$data['heading_title'] = $product_info['name'];
 			$data['text_size_guide'] = $this->language->get('text_size_guide');
+			$data['show_size_guide'] = true;
+
+			foreach ($this->model_catalog_product->getCategories($product_id) as $product_category) {
+				if ((int)$product_category['category_id'] === 262) {
+					$data['show_size_guide'] = false;
+					break;
+				}
+			}
+
 			$data['entry_qty'] = $this->language->get('entry_qty');
 
 			$data['text_minimum'] = sprintf($this->language->get('text_minimum'), $product_info['minimum']);

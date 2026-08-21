@@ -39,6 +39,12 @@
       
     {{ content_top }}
       <h1 id="page-title">{{ heading_title }}</h1>
+
+      {% if collection_videos %}
+      <div class="mm-category-videos">
+        {{ collection_videos }}
+      </div>
+      {% endif %}
       
     
       

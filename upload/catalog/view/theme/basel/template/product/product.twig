@@ -177,10 +177,11 @@
                         <div id="product">
 
 
+                            {% if show_size_guide %}
                                 <p>
                                     <button type="button" class="mm-size-guide-button" data-toggle="modal" data-target="#modal-size"><img src="image/size_guide.svg" class="filter-icon" alt="" aria-hidden="true" /> {{ text_size_guide }}</button>
                                 </p>
-                
+                            {% endif %}
 
                             {% if options %}
                             <div class="options">
@@ -1034,6 +1035,7 @@ function updateFreeShippingUI(totalAmountStr) {
 </script>
 
 
+{% if show_size_guide %}
 <div id="modal-size" class="modal fade">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -1116,5 +1118,6 @@ function updateFreeShippingUI(totalAmountStr) {
         </div>
     </div>
 </div>
+{% endif %}
 </main>
 {{ footer }}

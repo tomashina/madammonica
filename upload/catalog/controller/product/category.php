@@ -400,6 +400,18 @@ $underwear_root_ids = [126, 127];     // Muškarci, Žene (root ID-evi)
 			$data['order'] = $order;
 			$data['limit'] = $limit;
 
+			$data['collection_videos'] = '';
+			$collection_category_ids = array(256, 258, 259, 260, 261, 262);
+
+			if ((int)$page === 1 && in_array((int)$category_id, $collection_category_ids, true)) {
+				$this->load->model('setting/module');
+				$collection_video_setting = $this->model_setting_module->getModule(90);
+
+				if ($collection_video_setting && !empty($collection_video_setting['status'])) {
+					$data['collection_videos'] = $this->load->controller('extension/module/basel_content', $collection_video_setting);
+				}
+			}
+
 			$data['continue'] = $this->url->link('common/home');
 
 			$data['column_left'] = $this->load->controller('common/column_left');

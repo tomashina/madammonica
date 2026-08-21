@@ -77,3 +77,20 @@ Then complete these administration/server steps:
 
 The SQL migration is safe to run again, but always keep a fresh database backup
 before importing it.
+
+## Collection menu and category videos release
+
+This release reuses the existing six collection categories and the existing
+`Home main top banners` video module. After deploying the code, apply the
+idempotent menu migration:
+
+```bash
+cd /home/amds/balidoo.agmedia.rocks
+mysqldump -u DB_USER -p DB_NAME > ~/madammonica-before-collection-menu-$(date +%F-%H%M).sql
+git pull --ff-only origin main
+mysql -u DB_USER -p DB_NAME < deploy/collection_menu.sql
+```
+
+Then refresh **Extensions > Modifications**, clear the OpenCart application and
+theme caches, and verify the six menu links, both videos above each category's
+product list, and that the size guide is hidden only on leggings products.
