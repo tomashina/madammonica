@@ -67,4 +67,33 @@ class ControllerExtensionfbecommevnt extends Controller {
 			} 
 		} 
 	}
+	public function cartevent() {
+		$this->load->model($this->modpath);
+		$items = $this->model_extension_fbecommevnt->getCartEventData();
+		$json = $items ? array('items' => $items) : array();
+
+		$this->response->addHeader('Content-Type: application/json');
+		$this->response->addHeader('Cache-Control: no-store, no-cache, must-revalidate');
+		$this->response->setOutput(json_encode($json));
+	}
+	public function purchaseevent() {
+		$this->load->model($this->modpath);
+		$json = array();
+		$order_id = isset($this->session->data['order_id']) ? (int)$this->session->data['order_id'] : 0;
+
+		if ($order_id) {
+			$items = $this->model_extension_fbecommevnt->getPurchaseEventData($order_id);
+			if ($items) {
+				$json = array(
+					'order_id' => (string)$order_id,
+					'event_id' => 'purchase_' . $order_id,
+					'items' => $items
+				);
+			}
+		}
+
+		$this->response->addHeader('Content-Type: application/json');
+		$this->response->addHeader('Cache-Control: no-store, no-cache, must-revalidate');
+		$this->response->setOutput(json_encode($json));
+	}
 }

@@ -6,8 +6,10 @@
   var consentCookieName = 'mm_consent_v1';
   var consent = readMarketingConsent();
   var pendingEvents = [];
+  var pendingOnceEvents = {};
   var contextEvents = {};
   var sentContextEvents = {};
+  var sentOnceEvents = {};
   var initialized = false;
 
   if (!/^\d+$/.test(pixelId)) return;
@@ -51,10 +53,14 @@
     window.fbq('init', pixelId);
   }
 
-  function send(eventName, parameters, custom) {
+  function send(eventName, parameters, custom, eventId) {
     installBaseCode();
     var method = custom ? 'trackSingleCustom' : 'trackSingle';
-    window.fbq(method, pixelId, eventName, parameters || {});
+    if (eventId) {
+      window.fbq(method, pixelId, eventName, parameters || {}, {eventID: String(eventId)});
+    } else {
+      window.fbq(method, pixelId, eventName, parameters || {});
+    }
   }
 
   function track(eventName, parameters, custom) {
@@ -69,6 +75,48 @@
       if (contextEvents[eventName]) sentContextEvents[eventName] = true;
     } else if (consent === null && !contextEvents[eventName]) {
       pendingEvents.push({name: eventName, parameters: parameters || {}, custom: !!custom});
+    }
+  }
+
+  function onceStorageKey(eventName, dedupeId) {
+    return 'mm_meta_event:' + pixelId + ':' + eventName + ':' + String(dedupeId);
+  }
+
+  function wasSentOnce(key) {
+    if (sentOnceEvents[key]) return true;
+
+    try {
+      return window.localStorage.getItem(key) === '1';
+    } catch (error) {
+      return false;
+    }
+  }
+
+  function markSentOnce(key) {
+    sentOnceEvents[key] = true;
+
+    try {
+      window.localStorage.setItem(key, '1');
+    } catch (error) {
+      // In-memory deduplication still protects this page when storage is blocked.
+    }
+  }
+
+  function trackOnce(eventName, dedupeId, parameters, eventId) {
+    if (!eventName || !dedupeId) return;
+
+    var key = onceStorageKey(eventName, dedupeId);
+    if (wasSentOnce(key)) return;
+
+    if (consent === true) {
+      send(eventName, parameters, false, eventId);
+      markSentOnce(key);
+    } else if (consent === null) {
+      pendingOnceEvents[key] = {
+        name: eventName,
+        parameters: parameters || {},
+        eventId: eventId || ''
+      };
     }
   }
 
@@ -90,12 +138,22 @@
       pendingEvents.splice(0).forEach(function (event) {
         send(event.name, event.parameters, event.custom);
       });
+
+      Object.keys(pendingOnceEvents).forEach(function (key) {
+        var event = pendingOnceEvents[key];
+        if (!wasSentOnce(key)) {
+          send(event.name, event.parameters, false, event.eventId);
+          markSentOnce(key);
+        }
+      });
+      pendingOnceEvents = {};
     }
   }
 
   function revokeConsent() {
     consent = false;
     pendingEvents = [];
+    pendingOnceEvents = {};
     if (window.fbq && initialized) window.fbq('consent', 'revoke');
   }
 
@@ -130,6 +188,41 @@
     });
   }
 
+  function queryValue(name) {
+    var query = String(window.location.search || '').replace(/^\?/, '').split('&');
+
+    for (var i = 0; i < query.length; i += 1) {
+      var parts = query[i].split('=');
+      if (decodeURIComponent((parts.shift() || '').replace(/\+/g, ' ')) === name) {
+        return decodeURIComponent(parts.join('=').replace(/\+/g, ' '));
+      }
+    }
+
+    return '';
+  }
+
+  function responseJson(xhr) {
+    if (xhr.responseJSON) return xhr.responseJSON;
+
+    if (xhr.responseText) {
+      try { return JSON.parse(xhr.responseText); } catch (error) { return null; }
+    }
+
+    return null;
+  }
+
+  function endpointEvent(route, callback) {
+    if (!window.jQuery) return;
+
+    var baseUrl = window.jQuery('base').attr('href') || '';
+    window.jQuery.ajax({
+      url: baseUrl + 'index.php?route=extension/fbecommevnt/' + route,
+      type: 'get',
+      dataType: 'json',
+      cache: false
+    }).done(callback);
+  }
+
   function registerCommerceTracking() {
     if (!window.jQuery) return;
 
@@ -144,7 +237,35 @@
       }
     }
 
+    function trackPageCommerceEvents() {
+      var route = queryValue('route');
+      var searchString = queryValue('search');
+      var bodyClass = String(document.body.className || '');
+
+      if (searchString && (route === 'product/search' || bodyClass.indexOf('product-search') !== -1 || $('#product-search').length)) {
+        track('Search', {
+          search_string: searchString,
+          content_category: 'search'
+        }, false);
+      }
+
+      if (route === 'checkout/checkout' || bodyClass.indexOf('checkout-checkout') !== -1 || $('#checkout-checkout').length) {
+        endpointEvent('cartevent', function (response) {
+          if (response && response.items) track('InitiateCheckout', response.items, false);
+        });
+      }
+
+      if (route === 'checkout/success' || bodyClass.indexOf('checkout-success') !== -1) {
+        endpointEvent('purchaseevent', function (response) {
+          if (response && response.order_id && response.items) {
+            trackOnce('Purchase', response.order_id, response.items, response.event_id);
+          }
+        });
+      }
+    }
+
     trackVisibleProduct();
+    trackPageCommerceEvents();
 
     $(document).ajaxSuccess(function (_event, xhr, settings) {
       if (!settings) return;
@@ -153,16 +274,16 @@
       if (requestUrl.indexOf('route=product/product') !== -1) {
         window.setTimeout(trackVisibleProduct, 0);
       }
-      if (requestUrl.indexOf('route=checkout/cart/add') === -1) return;
 
-      var response = xhr.responseJSON;
-      if (!response && xhr.responseText) {
-        try { response = JSON.parse(xhr.responseText); } catch (error) { response = null; }
-      }
+      var response = responseJson(xhr);
       if (!response || !response.success) return;
 
       var request = parseRequestData(settings.data);
-      productEvent(request.product_id, 'AddToCart', parseInt(request.quantity, 10) || 1);
+      if (requestUrl.indexOf('route=checkout/cart/add') !== -1 || requestUrl.indexOf('route=extension/basel/basel_features/add_to_cart') !== -1) {
+        productEvent(request.product_id, 'AddToCart', parseInt(request.quantity, 10) || 1);
+      } else if (requestUrl.indexOf('route=account/wishlist/add') !== -1 || requestUrl.indexOf('route=extension/basel/basel_features/add_to_wishlist') !== -1) {
+        productEvent(request.product_id, 'AddToWishlist', 1);
+      }
     });
   }
 
@@ -170,13 +291,15 @@
     pixelId: pixelId,
     track: function (eventName, parameters) { track(eventName, parameters, false); },
     trackCustom: function (eventName, parameters) { track(eventName, parameters, true); },
+    trackOnce: trackOnce,
     productEvent: productEvent,
     getState: function () {
       return {
         pixelId: pixelId,
         consent: consent,
         initialized: initialized,
-        pendingEvents: pendingEvents.length
+        pendingEvents: pendingEvents.length,
+        pendingOnceEvents: Object.keys(pendingOnceEvents).length
       };
     }
   };

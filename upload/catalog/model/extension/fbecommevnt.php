@@ -87,72 +87,91 @@ class ModelExtensionfbecommevnt extends Controller {
 		}	
 		return $taxprc;
 	}
+	public function getCartEventData() {
+		if (!$this->cart->hasProducts()) {
+			return array();
+		}
+
+		$contents = array();
+		$content_ids = array();
+		$num_items = 0;
+
+		foreach ($this->cart->getProducts() as $product_info) {
+			$quantity = max(1, (int)$product_info['quantity']);
+			$price = $this->tax->calculate($product_info['price'], $product_info['tax_class_id'], $this->config->get('config_tax'));
+			$product_id = (string)$product_info['product_id'];
+
+			$content_ids[] = $product_id;
+			$num_items += $quantity;
+			$contents[] = array(
+				'id' => $product_id,
+				'quantity' => $quantity,
+				'item_price' => (float)$this->getcurval($price)
+			);
+		}
+
+		$data = array(
+			'value' => (float)$this->getcurval($this->cart->getTotal()),
+			'currency' => isset($this->session->data['currency']) ? $this->session->data['currency'] : $this->config->get('config_currency'),
+			'content_type' => 'product',
+			'content_ids' => $content_ids,
+			'contents' => $contents,
+			'num_items' => $num_items
+		);
+
+		$catalog_id = $this->getFBCATALOGID();
+		if ($catalog_id) {
+			$data['product_catalog_id'] = $catalog_id;
+		}
+
+		return $data;
+	}
+	public function getPurchaseEventData($order_id) {
+		$this->load->model('checkout/order');
+		$orderdata = $this->model_checkout_order->getOrder((int)$order_id);
+
+		if (!$orderdata) {
+			return array();
+		}
+
+		$order_products = array_merge($this->getOrderProduct($order_id), $this->getOrderProductOptions($order_id));
+		$contents = array();
+		$content_ids = array();
+		$num_items = 0;
+
+		foreach ($order_products as $product_info) {
+			$quantity = max(1, (int)$product_info['quantity']);
+			$product_id = (string)$product_info['product_id'];
+			$content_ids[] = $product_id;
+			$num_items += $quantity;
+			$contents[] = array(
+				'id' => $product_id,
+				'quantity' => $quantity,
+				'item_price' => round((float)$product_info['price'], 2)
+			);
+		}
+
+		$data = array(
+			'order_id' => (string)$order_id,
+			'value' => round((float)$orderdata['total'], 2),
+			'currency' => 'EUR',
+			'content_type' => 'product',
+			'content_ids' => $content_ids,
+			'contents' => $contents,
+			'num_items' => $num_items
+		);
+
+		$catalog_id = $this->getFBCATALOGID();
+		if ($catalog_id) {
+			$data['product_catalog_id'] = $catalog_id;
+		}
+
+		return $data;
+	}
 	public function getchksuccess($order_id = 0) {
-		if(!empty($order_id) && $this->getFBID()) { 
- 			$this->load->model('checkout/order');
-			
-			$orderdata = $this->model_checkout_order->getOrder($order_id);
-			if(!empty($orderdata)) {
-				$orderProduct = $this->getOrderProduct($order_id);
-				$orderProductOptions = $this->getOrderProductOptions($order_id);
-				$order_tax = $this->getordertax($order_id);
-				$order_shipping = $this->getordershipping($order_id);
-				
-				$product_data = array();
-				$purchase = array();
-  			
-				if(!empty($orderProduct)) {
-					foreach ($orderProduct as $product_info) { 
-						$price = $this->tax->calculate($product_info['price'] , $product_info['tax_class_id'], $this->config->get('config_tax')); 
-						$product_data[] = array(
-							"product_catalog_id" => $this->getFBCATALOGID(),
-							"id" => $product_info['product_id'],
-							"quantity" => $product_info['quantity'],
-							"item_price" => $this->getcurval($price),
-						);
-					} 
-				}
-				
-				if(!empty($orderProductOptions)) {
-					foreach ($orderProductOptions as $product_info) { 
-						$price = $this->tax->calculate($product_info['price'] , $product_info['tax_class_id'], $this->config->get('config_tax')); 
-						$product_data[] = array(
-							"product_catalog_id" => $this->getFBCATALOGID(),
-							"id" => $product_info['product_id'],
-							"quantity" => $product_info['quantity'],
-							"item_price" => $this->getcurval($price),
-						);
-					} 
-				}
-				
-				$purchase = array(
-					"value" => $this->getcurval($orderdata['total']),
-					"currency" => $this->session->data['currency'],
-					"content_type" => 'product', 
-					"contents" => $product_data
-				);
-				
- 				$leaddata = array(
-					"product_catalog_id" => $this->getFBCATALOGID(),
-					"content_category" => 'completeorder',
-					"content_name" => 'leadtracking',
-					"value" => 1,
-					"currency" => $this->session->data['currency'], 
-				);
-  				
-$jsonpurchase_data = json_encode($purchase);
-$jsonlead_data = json_encode($leaddata);
-$returndata = <<<EOF
-<script type="text/javascript">
-if (window.mmMetaPixel) {
-	window.mmMetaPixel.track('Purchase', $jsonpurchase_data);
-	window.mmMetaPixel.track('Lead', $jsonlead_data);
-}
-</script>
-EOF;
-return $returndata;
-			}
- 		} 
+		// Purchase is emitted once by meta-pixel.js using the order ID as its
+		// browser-side deduplication key and Meta event_id.
+		return '';
 	}
     
 	public function viewprod($product_id) {
@@ -162,82 +181,13 @@ return $returndata;
 	}
     
     public function searchproduct() {
-		if(isset($this->request->get['search']) && $this->getFBID()) { 
- 			$this->load->model('catalog/product');
-            
-            $product_data = array();
-            $filter_data = array( 'filter_name' => $this->request->get['search'], 'start' => 0, 'limit' => 5 );
-            $results = $this->model_catalog_product->getProducts($filter_data);
-            
-            if ($results) { 
-				foreach ($results as $product_info) {
-                    $price = $this->tax->calculate($product_info['price'] , $product_info['tax_class_id'], $this->config->get('config_tax')); 
-                    
-                    $product_data[] = array(
-                        "product_catalog_id" => $this->getFBCATALOGID(),
-                        "id" => $product_info['product_id'],
-                        "quantity" => $product_info['quantity'],
-                        "item_price" => $this->getcurval($price),
-                    );
-                }
-                
-                $searchdata = array(
-                    "value" => $this->cart->getTotal() ? $this->getcurval($this->cart->getTotal()) : 1,
-                    "currency" => $this->session->data['currency'],
-                    "content_type" => 'product', 
-                    "content_category" => 'search', 
-                    "search_string" => $this->request->get['search'], 
-                    "contents" => $product_data,
-                );
-    				
-$jsonsearch_data = json_encode($searchdata);
-$returndata = <<<EOF
-<script type="text/javascript">
-if (window.mmMetaPixel) window.mmMetaPixel.track('Search', $jsonsearch_data);
-</script>
-EOF;
-return $returndata;
-}
- 		} 
+		// Search result pages are tracked centrally by meta-pixel.js.
+		return '';
 	}
     
     public function begincheckout() {
-		if($this->getFBID()) { 
-        	$langdata = $this->getlang();
- 			$product_data = array();
-             
-            if ($this->cart->hasProducts()) {
-                foreach ($this->cart->getProducts() as $product_info) { 
-                    $price = $this->tax->calculate($product_info['price'] , $product_info['tax_class_id'], $this->config->get('config_tax')); 
-                    
-                    $product_data[] = array(
-                        "product_catalog_id" => $this->getFBCATALOGID(),
-                        "id" => $product_info['product_id'],
-                        "quantity" => $product_info['quantity'],
-                        "item_price" => $this->getcurval($price),
-                    );
-                } 
-                
-                $cartdata = array(
-                    "value" => $this->getcurval($this->cart->getTotal()),
-                    "currency" => $this->session->data['currency'],
-                    "content_type" => 'product', 
-                    "contents" => $product_data
-                );			 
-   				
-$jsoncart_data = json_encode($cartdata);
-$fbecommevnt_text_chkstp_onename = $langdata["text_chkstp_onename"];
-$returndata = <<<EOF
-<script type="text/javascript">
-if (window.mmMetaPixel) {
-	window.mmMetaPixel.track('InitiateCheckout', $jsoncart_data);
-	window.mmMetaPixel.trackCustom('$fbecommevnt_text_chkstp_onename', $jsoncart_data);
-}
-</script>
-EOF;
-return $returndata;
-}
- 		} 
+		// Checkout entry is tracked centrally by meta-pixel.js.
+		return '';
 	}
     
     public function checkoutfunnel() {
