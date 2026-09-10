@@ -17,6 +17,7 @@ class ControllerCommonHeader extends Controller {
 		// Non-essential analytics markup is injected only after explicit consent.
 		$data['analytics_encoded'] = $data['analytics'] ? base64_encode(implode("\n", $data['analytics'])) : '';
 		$data['analytics'] = array();
+		$data['meta_pixel_id'] = '1465776258750301';
 
 		if ($this->request->server['HTTPS']) {
 			$server = $this->config->get('config_ssl');

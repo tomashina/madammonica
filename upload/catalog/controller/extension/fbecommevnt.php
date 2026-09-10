@@ -32,22 +32,33 @@ class ControllerExtensionfbecommevnt extends Controller {
 		$this->load->model($this->modpath);
 		$this->load->model('catalog/product');
  		if(isset($this->request->post['product_id'])) { 
- 			$product_data = array();
-  			$product_info = $this->model_catalog_product->getProduct($this->request->post['product_id']);
+			$product_id = (int)$this->request->post['product_id'];
+			$quantity = isset($this->request->post['quantity']) ? max(1, (int)$this->request->post['quantity']) : 1;
+			$product_info = $this->model_catalog_product->getProduct($product_id);
  			
 			if ($product_info) { 
  				$price = $product_info['special'] ? $product_info['special'] : $product_info['price'];
  				$price = $this->tax->calculate($price , $product_info['tax_class_id'], $this->config->get('config_tax')); 
+				$price = (float)$this->model_extension_fbecommevnt->getcurval($price);
  			
 				$product_data = array(
-					"product_catalog_id" => $this->model_extension_fbecommevnt->getFBCATALOGID(),
-					"content_ids" => array($product_info['product_id']),
+					"content_ids" => array((string)$product_info['product_id']),
 					"content_type" => 'product',
 					"content_name" => htmlspecialchars_decode($product_info['name']),
 					"content_category" => $this->model_extension_fbecommevnt->getProdCatName($product_info['product_id']),
-					"value" => $this->model_extension_fbecommevnt->getcurval($price),
-					"currency" => $this->session->data['currency'], 
+					"contents" => array(array(
+						"id" => (string)$product_info['product_id'],
+						"quantity" => $quantity,
+						"item_price" => $price
+					)),
+					"value" => $price * $quantity,
+					"currency" => $this->session->data['currency']
 				); 
+
+				$catalog_id = $this->model_extension_fbecommevnt->getFBCATALOGID();
+				if ($catalog_id) {
+					$product_data['product_catalog_id'] = $catalog_id;
+				}
 				
 				$event_data['items'] = $product_data;
  				

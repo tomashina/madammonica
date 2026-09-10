@@ -144,8 +144,10 @@ $jsonpurchase_data = json_encode($purchase);
 $jsonlead_data = json_encode($leaddata);
 $returndata = <<<EOF
 <script type="text/javascript">
-fbq('track', 'Purchase', $jsonpurchase_data);
-fbq('track', 'Lead', $jsonlead_data);
+if (window.mmMetaPixel) {
+	window.mmMetaPixel.track('Purchase', $jsonpurchase_data);
+	window.mmMetaPixel.track('Lead', $jsonlead_data);
+}
 </script>
 EOF;
 return $returndata;
@@ -153,36 +155,10 @@ return $returndata;
  		} 
 	}
     
-    public function viewprod($product_id) {
-		if(!empty($product_id) && $this->getFBID()) { 
- 			$this->load->model('catalog/product');
-            
-            $product_data = array();
-   			$product_info = $this->model_catalog_product->getProduct($product_id);
-            
-            if ($product_info) { 
-				$price = $product_info['special'] ? $product_info['special'] : $product_info['price'];
- 				$price = $this->tax->calculate($price , $product_info['tax_class_id'], $this->config->get('config_tax')); 
- 			
-				$product_data = array(
-					"product_catalog_id" => $this->getFBCATALOGID(),
-					"content_ids" => array($product_info['product_id']),
-					"content_type" => 'product',
-					"content_name" => htmlspecialchars_decode($product_info['name']),
-					"content_category" => $this->getProdCatName($product_info['product_id']),
-					"value" => $this->getcurval($price),
-					"currency" => $this->session->data['currency'], 
-				); 
-    				
-$jsonproduct_data = json_encode($product_data);
-$returndata = <<<EOF
-<script type="text/javascript">
-fbq('track', 'ViewContent', $jsonproduct_data);
-</script>
-EOF;
-return $returndata;
-}
- 		} 
+	public function viewprod($product_id) {
+		// meta-pixel.js detects product pages directly. Returning no markup avoids
+		// duplicate ViewContent events from the legacy OCMOD hook.
+		return '';
 	}
     
     public function searchproduct() {
@@ -217,7 +193,7 @@ return $returndata;
 $jsonsearch_data = json_encode($searchdata);
 $returndata = <<<EOF
 <script type="text/javascript">
-fbq('track', 'Search', $jsonsearch_data);
+if (window.mmMetaPixel) window.mmMetaPixel.track('Search', $jsonsearch_data);
 </script>
 EOF;
 return $returndata;
@@ -253,8 +229,10 @@ $jsoncart_data = json_encode($cartdata);
 $fbecommevnt_text_chkstp_onename = $langdata["text_chkstp_onename"];
 $returndata = <<<EOF
 <script type="text/javascript">
-fbq('track', 'InitiateCheckout', $jsoncart_data);
-fbq('trackCustom', '$fbecommevnt_text_chkstp_onename', $jsoncart_data);
+if (window.mmMetaPixel) {
+	window.mmMetaPixel.track('InitiateCheckout', $jsoncart_data);
+	window.mmMetaPixel.trackCustom('$fbecommevnt_text_chkstp_onename', $jsoncart_data);
+}
 </script>
 EOF;
 return $returndata;
@@ -329,7 +307,7 @@ return $returndata;
 		if($this->getFBID()) {
 $returndata = <<<EOF
 <script type="text/javascript">
-fbq('track', 'Contact');
+if (window.mmMetaPixel) window.mmMetaPixel.track('Contact');
 </script>
 EOF;
 return $returndata;
@@ -342,7 +320,7 @@ return $returndata;
 $loginevent = $langdata['text_loginevent'];
 $returndata = <<<EOF
 <script type="text/javascript">
-fbq('trackCustom', '$loginevent');
+if (window.mmMetaPixel) window.mmMetaPixel.trackCustom('$loginevent');
 </script>
 EOF;
 return $returndata;
@@ -363,35 +341,21 @@ $jsonlead_data = json_encode($leaddata);
 $regevent = $langdata['text_regevent'];
 $returndata = <<<EOF
 <script type="text/javascript">
-fbq('trackCustom', '$regevent');
-fbq('track', 'CompleteRegistration');
-fbq('track', 'Lead', $jsonlead_data);
+if (window.mmMetaPixel) {
+	window.mmMetaPixel.trackCustom('$regevent');
+	window.mmMetaPixel.track('CompleteRegistration');
+	window.mmMetaPixel.track('Lead', $jsonlead_data);
+}
 </script>
 EOF;
 return $returndata;
  		} 
 	}
     
-    public function gettrackcode() {
-    if($this->getFBID()) { 
-    	$fbecommevnt_fb_pixel_id = $this->getFBID();
-$returndata = <<<EOF
-<script type="text/javascript">
-!function(f,b,e,v,n,t,s)
-{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-n.queue=[];t=b.createElement(e);t.async=!0;
-t.src=v;s=b.getElementsByTagName(e)[0];
-s.parentNode.insertBefore(t,s)}(window, document,'script',
-'https://connect.facebook.net/en_US/fbevents.js');
-fbq('init', '$fbecommevnt_fb_pixel_id');
-fbq('track', 'PageView');
-fbq('track', 'FindLocation');
-$('head').after('<noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=$fbecommevnt_fb_pixel_id&ev=PageView&noscript=1"/></noscript>');
-</script>
-EOF;
-return $returndata;
-		}
+	public function gettrackcode() {
+		// The maintained, consent-aware integration is loaded by the theme header.
+		// Keep this hook empty so an enabled legacy module cannot initialize the
+		// same Pixel twice or bypass the visitor's marketing-cookie choice.
+		return '';
 	}    
 }
