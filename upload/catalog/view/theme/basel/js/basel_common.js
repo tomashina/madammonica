@@ -52,6 +52,17 @@ function prepareMutedInlineAutoplayVideos(context) {
 	});
 }
 
+function baselSearch(value) {
+	var url = $('base').attr('href') + 'index.php?route=product/search';
+	var search = $.trim(value || '');
+
+	if (search) {
+		url += '&search=' + encodeURIComponent(search);
+	}
+
+	window.location.href = url;
+}
+
 $(document).ready(function() {
 	
 	// Add body ready class //
@@ -181,6 +192,23 @@ $(document).ready(function() {
 	
 	$('#currency-select').on('change', function() {
   	$('#curr-code').attr( 'value', this.value ); $('#form-currency').submit();
+	});
+
+	// Header search
+	$(document).on('click', '.do-search, .search-holder-mobile button', function(e) {
+		e.preventDefault();
+
+		var $holder = $(this).closest('.search-holder, .search-holder-mobile, .full-search-wrapper');
+		var value = $holder.find('input[name="search"]').filter(':visible').first().val();
+
+		baselSearch(value);
+	});
+
+	$(document).on('keydown', '.search-holder input[name="search"], .search-holder-mobile input[name="search"], .full-search-wrapper input[name="search"]', function(e) {
+		if (e.keyCode == 13) {
+			e.preventDefault();
+			baselSearch($(this).val());
+		}
 	});
 	
 	// Tooltip position on product style 2

@@ -1675,6 +1675,11 @@ position:absolute;
 .full-search-wrapper .search-button {
 	width:auto;
 }
+.full-search-wrapper button.search-button {
+	padding:0;
+	border:0;
+	background:transparent;
+}
 .full-search-wrapper input, .full-search-wrapper select {
 	border:none !important;
 }

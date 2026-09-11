@@ -1,9 +1,10 @@
-<div class="search-field">
+<form class="search-field" action="index.php" method="get">
+<input type="hidden" name="route" value="product/search" />
 <input type="text" name="search" value="{{ search }}" placeholder="{{ basel_text_search }}" class="form-control main-search-input" />
-<span class="btn btn-contrast do-search main">Traži</span>
-</div>
+<button type="submit" class="btn btn-contrast do-search main">Traži</button>
+</form>
 <script>
 $(document).ready(function() {
-$('.search-holder-mobile input[name=\'search-mobile\']').attr("placeholder", "{{ basel_text_search }}").attr("value", "{{ search }}");
+$('.search-holder-mobile input[name=\'search\']').attr("placeholder", "{{ basel_text_search }}").attr("value", "{{ search }}");
 });
 </script>

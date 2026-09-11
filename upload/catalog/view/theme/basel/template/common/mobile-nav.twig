@@ -10,11 +10,12 @@
     {% if header_search %}
     <li class="search" style="height: 44px;">
 
-         <div class="search-holder-mobile">
+         <form class="search-holder-mobile" action="index.php" method="get">
+         <input type="hidden" name="route" value="product/search" />
          <label style="display:unset">
-        <input type="text" name="search-mobile" value="" placeholder="{{ text_search }}" class="form-control" aria-label="{{ text_search }}" /><button type="button" class="fa fa-search" aria-label="{{ text_search }}"></button>
-        </label>
-        </div>
+        <input type="text" name="search" value="" placeholder="{{ text_search }}" class="form-control" aria-label="{{ text_search }}" /><button type="submit" class="fa fa-search" aria-label="{{ text_search }}"></button>
+         </label>
+        </form>
     </li>
     {% endif %}
 </ul>
